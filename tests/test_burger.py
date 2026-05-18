@@ -1,46 +1,8 @@
-import pytest
-from unittest.mock import Mock
 from praktikum.burger import Burger
-from praktikum.bun import Bun
-from praktikum.ingredient import Ingredient
-from praktikum.ingredient_types import INGREDIENT_TYPE_SAUCE, INGREDIENT_TYPE_FILLING
 
 
 class TestBurger:
     """Тесты для класса Burger"""
-
-    @pytest.fixture
-    def burger(self):
-        """Фикстура: создаёт бургер для каждого теста"""
-        return Burger()
-
-    @pytest.fixture
-    def mock_bun(self):
-        """Фикстура: мок-булка"""
-        bun = Mock(spec=Bun)
-        bun.get_name.return_value = "black bun"
-        bun.get_price.return_value = 100.0
-        return bun
-
-    @pytest.fixture
-    def mock_sauce(self):
-        """Фикстура: мок-соус"""
-        sauce = Mock(spec=Ingredient)
-        sauce.get_name.return_value = "hot sauce"
-        sauce.get_price.return_value = 50.0
-        sauce.get_type.return_value = INGREDIENT_TYPE_SAUCE
-        return sauce
-
-    @pytest.fixture
-    def mock_filling(self):
-        """Фикстура: мок-начинка"""
-        filling = Mock(spec=Ingredient)
-        filling.get_name.return_value = "cutlet"
-        filling.get_price.return_value = 200.0
-        filling.get_type.return_value = INGREDIENT_TYPE_FILLING
-        return filling
-
-    # ========== ТЕСТЫ ДЛЯ УСТАНОВКИ БУЛКИ ==========
 
     def test_set_buns(self, burger, mock_bun):
         """Установка булки в бургер"""
@@ -53,8 +15,6 @@ class TestBurger:
         assert burger.bun is not None
         assert burger.bun.get_name() == "black bun"
 
-    # ========== ТЕСТЫ ДЛЯ ДОБАВЛЕНИЯ ИНГРЕДИЕНТОВ ==========
-
     def test_add_ingredient_single(self, burger, mock_sauce):
         """Добавление одного ингредиента"""
         burger.add_ingredient(mock_sauce)
@@ -66,8 +26,6 @@ class TestBurger:
         burger.add_ingredient(mock_sauce)
         burger.add_ingredient(mock_filling)
         assert len(burger.ingredients) == 2
-
-    # ========== ТЕСТЫ ДЛЯ УДАЛЕНИЯ ИНГРЕДИЕНТОВ ==========
 
     def test_remove_ingredient_by_index(self, burger, mock_sauce, mock_filling):
         """Удаление ингредиента по индексу"""
@@ -85,8 +43,6 @@ class TestBurger:
         assert len(burger.ingredients) == 1
         assert burger.ingredients[0] == mock_sauce
 
-    # ========== ТЕСТЫ ДЛЯ ПЕРЕМЕЩЕНИЯ ИНГРЕДИЕНТОВ ==========
-
     def test_move_ingredient_forward(self, burger, mock_sauce, mock_filling):
         """Перемещение ингредиента вперёд"""
         burger.add_ingredient(mock_sauce)
@@ -103,27 +59,23 @@ class TestBurger:
         assert burger.ingredients[0] == mock_filling
         assert burger.ingredients[1] == mock_sauce
 
-    # ========== ТЕСТЫ ДЛЯ РАСЧЁТА ЦЕНЫ ==========
-
     def test_get_price_only_bun(self, burger, mock_bun):
         """Цена бургера только с булкой (верх + низ)"""
         burger.set_buns(mock_bun)
-        assert burger.get_price() == 200.0  # 100 + 100
+        assert burger.get_price() == 200.0
 
     def test_get_price_with_one_ingredient(self, burger, mock_bun, mock_sauce):
         """Цена бургера с булкой и одним ингредиентом"""
         burger.set_buns(mock_bun)
         burger.add_ingredient(mock_sauce)
-        assert burger.get_price() == 250.0  # 200 + 50
+        assert burger.get_price() == 250.0
 
     def test_get_price_with_multiple_ingredients(self, burger, mock_bun, mock_sauce, mock_filling):
         """Цена бургера с булкой и несколькими ингредиентами"""
         burger.set_buns(mock_bun)
         burger.add_ingredient(mock_sauce)
         burger.add_ingredient(mock_filling)
-        assert burger.get_price() == 450.0  # 200 + 50 + 200
-
-    # ========== ТЕСТЫ ДЛЯ ПОЛУЧЕНИЯ РЕЦЕПТА ==========
+        assert burger.get_price() == 450.0
 
     def test_get_receipt_without_ingredients(self, burger, mock_bun):
         """Рецепт бургера без ингредиентов"""
